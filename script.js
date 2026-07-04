@@ -47,3 +47,50 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Services accordion: auto-cycles when idle, follows the mouse on hover
+const accordion = document.getElementById('accordion');
+
+if (accordion) {
+  const panels = Array.from(accordion.querySelectorAll('.acc-panel'));
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let current = 0;
+  let timer = null;
+  const INTERVAL = 3800;
+
+  function open(index) {
+    current = index;
+    panels.forEach((panel, i) => panel.classList.toggle('is-open', i === index));
+  }
+
+  function advance() {
+    open((current + 1) % panels.length);
+  }
+
+  function startAuto() {
+    if (reduceMotion || timer) return;
+    timer = setInterval(advance, INTERVAL);
+  }
+
+  function stopAuto() {
+    clearInterval(timer);
+    timer = null;
+  }
+
+  panels.forEach((panel, i) => {
+    panel.addEventListener('mouseenter', () => open(i));
+    panel.addEventListener('click', () => open(i));
+  });
+
+  accordion.addEventListener('mouseenter', stopAuto);
+  accordion.addEventListener('mouseleave', startAuto);
+
+  // Only auto-cycle while the section is in view
+  const accObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { startAuto(); } else { stopAuto(); }
+    });
+  }, { threshold: 0.25 });
+
+  accObserver.observe(accordion);
+}

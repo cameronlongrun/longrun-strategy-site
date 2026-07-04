@@ -38,10 +38,12 @@
 
   <!-- HOME -->
   <section id="home" class="section hero">
+    <span class="hero-glow" aria-hidden="true"></span>
+    <span class="hero-glow hero-glow-2" aria-hidden="true"></span>
     <span class="hero-watermark" aria-hidden="true">Longrun</span>
     <div class="container hero-inner">
       <p class="eyebrow">Strategy, Diligence, and Value Creation for Private Equity</p>
-      <h1>Advisory that outlasts the deck.</h1>
+      <h1 class="hero-title">Advisory that <span class="hero-mark">outlasts</span> the deck.</h1>
       <p class="hero-sub">Longrun Strategy helps private equity sponsors and management teams underwrite, grow, and realize value across the full life of an investment, with the rigor of a global firm and the attention of a dedicated partner.</p>
       <svg class="hero-line" viewBox="0 0 640 8" preserveAspectRatio="none" aria-hidden="true">
         <line x1="0" y1="4" x2="640" y2="4"/>
@@ -66,15 +68,22 @@
         <h2>An independent partner across the investment lifecycle.</h2>
         <span class="rule"></span>
       </div>
-      <div class="two-col">
-        <div class="reveal" style="transition-delay:0.08s">
-          <p>Longrun Strategy is an independent advisory firm built to help private equity investors make better decisions, before a deal closes and long after it does. Our team pairs the analytical rigor of top-tier strategy consulting with real operating experience building and scaling companies from the inside.</p>
-          <p>That blend matters. We have run the diligence, and we have lived with the decisions it informs, so our work stays grounded in what actually moves a business.</p>
+      <div class="about-grid">
+        <div class="reveal about-lead">
+          <p>Longrun Strategy is an independent advisory firm that helps private equity investors decide with conviction, before a deal closes and long after it does. We pair top-tier strategy consulting with real operating experience, so the work stays grounded in what actually moves a business.</p>
+          <ul class="about-tags">
+            <li>Commercial &amp; Vendor Diligence</li>
+            <li>Market Sizing</li>
+            <li>Growth Strategy</li>
+            <li>Value Creation</li>
+            <li>International Go-to-Market</li>
+            <li>M&amp;A Advisory</li>
+          </ul>
         </div>
-        <div class="reveal" style="transition-delay:0.18s">
-          <p>We specialize in commercial and vendor due diligence, market sizing, growth strategy, and value creation, with particular depth in international go-to-market and geographic expansion, M&amp;A advisory, and helping leadership teams make high-stakes decisions with clarity and confidence.</p>
-          <p>The name says how we think. Good investing is a marathon, not a sprint, and the best answer is the one that still holds years after the deal closes: in the data room, in the committee meeting, and in the market.</p>
-        </div>
+        <aside class="reveal about-quote" style="transition-delay:0.12s">
+          <p class="quote-big">Good investing is a marathon, not a sprint.</p>
+          <p class="quote-sub">The best answer is the one that still holds years after the deal closes: in the data room, in the committee meeting, and in the market.</p>
+        </aside>
       </div>
     </div>
   </section>
@@ -87,32 +96,47 @@
         <h2>Focused advisory work across the investment lifecycle.</h2>
         <span class="rule"></span>
       </div>
-      <div class="cards">
-        <div class="card reveal" style="transition-delay:0s">
-          <span class="card-num">01</span>
-          <h3>Commercial Due Diligence</h3>
-          <p>We pressure-test the commercial case behind an investment: market size and growth, competitive dynamics, customer concentration, and pricing power. Sponsors use our findings to underwrite with confidence and negotiate from a position of knowledge.</p>
-        </div>
-        <div class="card reveal" style="transition-delay:0.08s">
-          <span class="card-num">02</span>
-          <h3>Growth &amp; Market Strategy</h3>
-          <p>For portfolio companies and management teams, we build growth strategy grounded in evidence and sized to the opportunity. Market segmentation, whitespace identification, and go to market plans that a board can approve and a team can execute.</p>
-        </div>
-        <div class="card reveal" style="transition-delay:0.16s">
-          <span class="card-num">03</span>
-          <h3>Portfolio Value Creation</h3>
-          <p>Between entry and exit is where value gets made or lost. We work alongside management on the specific, prioritized initiatives that move EBITDA: pricing, channel strategy, category expansion, and operational focus.</p>
-        </div>
-        <div class="card reveal" style="transition-delay:0.24s">
-          <span class="card-num">04</span>
-          <h3>Competitive &amp; Landscape Assessment</h3>
-          <p>A clear view of where a category is headed and who is positioned to win it. We map competitors, private label and emerging entrants, channel shifts, and category trends, so you are never surprised by a competitor's next move.</p>
-        </div>
-        <div class="card reveal" style="transition-delay:0.32s">
-          <span class="card-num">05</span>
-          <h3>Exit Readiness &amp; Vendor Due Diligence</h3>
-          <p>We help sponsors and management teams tell the growth story to the next buyer, backed by the same rigor we would want to see if we were sitting on the other side of the table.</p>
-        </div>
+      <div class="accordion reveal" id="accordion">
+        <article class="acc-panel is-open" data-index="0">
+          <span class="acc-num">01</span>
+          <span class="acc-label" aria-hidden="true">Commercial Due Diligence</span>
+          <div class="acc-content">
+            <h3>Commercial Due Diligence</h3>
+            <p>We pressure-test the commercial case behind an investment: market size and growth, competitive dynamics, customer concentration, and pricing power. Sponsors use our findings to underwrite with confidence and negotiate from a position of knowledge.</p>
+          </div>
+        </article>
+        <article class="acc-panel" data-index="1">
+          <span class="acc-num">02</span>
+          <span class="acc-label" aria-hidden="true">Growth &amp; Market Strategy</span>
+          <div class="acc-content">
+            <h3>Growth &amp; Market Strategy</h3>
+            <p>For portfolio companies and management teams, we build growth strategy grounded in evidence and sized to the opportunity. Market segmentation, whitespace identification, and go to market plans that a board can approve and a team can execute.</p>
+          </div>
+        </article>
+        <article class="acc-panel" data-index="2">
+          <span class="acc-num">03</span>
+          <span class="acc-label" aria-hidden="true">Portfolio Value Creation</span>
+          <div class="acc-content">
+            <h3>Portfolio Value Creation</h3>
+            <p>Between entry and exit is where value gets made or lost. We work alongside management on the specific, prioritized initiatives that move EBITDA: pricing, channel strategy, category expansion, and operational focus.</p>
+          </div>
+        </article>
+        <article class="acc-panel" data-index="3">
+          <span class="acc-num">04</span>
+          <span class="acc-label" aria-hidden="true">Competitive &amp; Landscape Assessment</span>
+          <div class="acc-content">
+            <h3>Competitive &amp; Landscape Assessment</h3>
+            <p>A clear view of where a category is headed and who is positioned to win it. We map competitors, private label and emerging entrants, channel shifts, and category trends, so you are always ready for a competitor's next move.</p>
+          </div>
+        </article>
+        <article class="acc-panel" data-index="4">
+          <span class="acc-num">05</span>
+          <span class="acc-label" aria-hidden="true">Exit Readiness &amp; Vendor Due Diligence</span>
+          <div class="acc-content">
+            <h3>Exit Readiness &amp; Vendor Due Diligence</h3>
+            <p>We help sponsors and management teams tell the growth story to the next buyer, backed by the same rigor we would want to see if we were sitting on the other side of the table.</p>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -157,7 +181,7 @@
       <h2>Get in touch.</h2>
       <span class="rule rule-center"></span>
       <p class="contact-sub">If you are evaluating an investment, supporting a portfolio company, or want a second opinion on a growth thesis, reach out directly.</p>
-      <a href="mailto:cameron@longrunstrategy.com" class="btn btn-primary btn-large">cameron@longrunstrategy.com</a>
+      <a href="mailto:cameron@longrunstrategy.com" class="btn btn-accent btn-large">cameron@longrunstrategy.com</a>
     </div>
   </section>
 
