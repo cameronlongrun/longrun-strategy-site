@@ -30,3 +30,20 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-45% 0px -50% 0px' });
 
 sections.forEach(section => observer.observe(section));
+
+const header = document.querySelector('.site-header');
+
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 12);
+}, { passive: true });
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
