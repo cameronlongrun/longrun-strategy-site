@@ -56,7 +56,7 @@ if (accordion) {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let current = 0;
   let timer = null;
-  const INTERVAL = 2400;
+  const INTERVAL = 4600;
 
   function open(index) {
     current = index;
