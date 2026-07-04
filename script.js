@@ -56,11 +56,14 @@ if (accordion) {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let current = 0;
   let timer = null;
-  const INTERVAL = 3800;
+  const INTERVAL = 2400;
 
   function open(index) {
     current = index;
-    panels.forEach((panel, i) => panel.classList.toggle('is-open', i === index));
+    panels.forEach((panel, i) => {
+      panel.classList.toggle('is-open', i === index);
+      panel.dataset.distance = Math.abs(i - index);
+    });
   }
 
   function advance() {
@@ -76,6 +79,8 @@ if (accordion) {
     clearInterval(timer);
     timer = null;
   }
+
+  open(0);
 
   panels.forEach((panel, i) => {
     panel.addEventListener('mouseenter', () => open(i));
