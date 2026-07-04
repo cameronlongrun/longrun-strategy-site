@@ -1,9 +1,9 @@
 :root {
   --navy: #2A2622;
   --navy-light: #3A342E;
-  --gold: #B75B32;
-  --gold-dark: #7A3B22;
-  --gold-light: #D9895F;
+  --gold: #D9895F;
+  --gold-dark: #B75B32;
+  --gold-light: #E7A882;
   --cream: #F7F4EE;
   --white: #FDFBF7;
   --charcoal: #2A2622;
@@ -269,7 +269,7 @@ a { text-decoration: none; }
   pointer-events: none;
   border-radius: 50%;
   filter: blur(12px);
-  background: radial-gradient(circle, rgba(183, 91, 50, 0.34) 0%, rgba(183, 91, 50, 0) 70%);
+  background: radial-gradient(circle, rgba(217, 137, 95, 0.34) 0%, rgba(217, 137, 95, 0) 70%);
   width: 560px;
   height: 560px;
   top: 34%;
@@ -408,7 +408,7 @@ a { text-decoration: none; }
   border-radius: 22px;
   border: 1px solid var(--gold);
   color: var(--gold-dark);
-  background: rgba(183, 91, 50, 0.06);
+  background: rgba(217, 137, 95, 0.06);
 }
 
 /* Buttons */
@@ -464,7 +464,7 @@ a { text-decoration: none; }
 .btn-accent {
   background: var(--gold);
   color: var(--white);
-  box-shadow: 0 8px 20px rgba(183, 91, 50, 0.28);
+  box-shadow: 0 8px 20px rgba(217, 137, 95, 0.28);
 }
 
 .btn-accent:hover {
@@ -520,7 +520,7 @@ a { text-decoration: none; }
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(155deg, #B75B32 0%, #7A3B22 100%);
+  background: linear-gradient(155deg, #D9895F 0%, #B75B32 100%);
   color: var(--white);
   border-radius: 14px;
   padding: 40px 36px;
@@ -566,8 +566,8 @@ a { text-decoration: none; }
 .acc-panel.is-open {
   flex-grow: 5.2;
   border-color: transparent;
-  background: linear-gradient(150deg, #B75B32 0%, #9C4526 100%);
-  box-shadow: 0 0 44px rgba(183, 91, 50, 0.28), 0 22px 44px rgba(122, 59, 34, 0.22);
+  background: linear-gradient(150deg, #D9895F 0%, #B75B32 100%);
+  box-shadow: 0 0 44px rgba(217, 137, 95, 0.28), 0 22px 44px rgba(122, 59, 34, 0.22);
 }
 
 .acc-num {
@@ -671,7 +671,7 @@ a { text-decoration: none; }
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: repeating-radial-gradient(circle at 50% 116%, transparent 0 46px, rgba(183, 91, 50, 0.08) 46px 48px);
+  background: repeating-radial-gradient(circle at 50% 116%, transparent 0 46px, rgba(217, 137, 95, 0.08) 46px 48px);
   -webkit-mask-image: radial-gradient(125% 105% at 50% 100%, #000 18%, transparent 68%);
   mask-image: radial-gradient(125% 105% at 50% 100%, #000 18%, transparent 68%);
 }
