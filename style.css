@@ -392,7 +392,7 @@ a { text-decoration: none; }
   display: flex;
   gap: 16px;
   width: max-content;
-  animation: marquee 42s linear infinite;
+  animation: marquee 75s linear infinite;
 }
 
 @keyframes marquee {
