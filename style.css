@@ -544,38 +544,43 @@ a { text-decoration: none; }
   margin-bottom: 0;
 }
 
-/* Services accordion: a scroll-snapped peek carousel, at every screen size.
-   Cards sit inside a fixed-height scrollable window; scrolling advances one
-   card at a time and hands scroll back to the page once the last card passes. */
+/* Services accordion: a stacked deck of cards, at every screen size.
+   Scrolling (wheel or swipe) flips the front card back and away, revealing
+   the next one underneath, like flipping through a hand of cards. Once you
+   flip past the last one, scrolling continues down the page as usual. */
 .accordion {
-  display: block;
+  position: relative;
   margin-top: 44px;
   height: 460px;
-  border-radius: 14px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  perspective: 1400px;
 }
 
-.accordion::-webkit-scrollbar { display: none; }
-
 .acc-panel {
-  position: relative;
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 412px;
+  height: 100%;
   overflow: hidden;
   cursor: pointer;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--white);
   padding: 26px;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  transform-origin: top center;
+  backface-visibility: hidden;
+  transition: transform 0.6s cubic-bezier(.22,.68,.34,1), opacity 0.45s ease, background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.acc-panel[data-slot="0"] { transform: translateY(0) scale(1) rotateX(0deg); opacity: 1; z-index: 50; }
+.acc-panel[data-slot="1"] { transform: translateY(34px) scale(0.96) rotateX(0deg); opacity: 1; z-index: 40; }
+.acc-panel[data-slot="2"] { transform: translateY(58px) scale(0.93) rotateX(0deg); opacity: 0.85; z-index: 30; }
+.acc-panel[data-slot="3"] { transform: translateY(80px) scale(0.9) rotateX(0deg); opacity: 0.55; z-index: 20; }
+.acc-panel[data-slot="4"] { transform: translateY(95px) scale(0.88) rotateX(0deg); opacity: 0.3; z-index: 10; }
+.acc-panel[data-slot="passed"] {
+  transform: translateY(-36px) scale(0.98) rotateX(-100deg);
+  opacity: 0;
+  z-index: 5;
+  pointer-events: none;
 }
 
 .acc-panel.is-open {
@@ -717,10 +722,10 @@ a { text-decoration: none; }
   .steps { grid-template-columns: 1fr 1fr; }
 }
 
-/* Services accordion: slightly shorter window and cards on small screens */
+/* Services accordion: slightly shorter deck on small screens */
 @media (max-width: 760px) {
   .accordion { height: 400px; }
-  .acc-panel { height: 356px; padding: 22px 20px; }
+  .acc-panel { padding: 22px 20px; }
 }
 
 @media (max-width: 640px) {
