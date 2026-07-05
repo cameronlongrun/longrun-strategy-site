@@ -48,14 +48,20 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-// Services accordion: auto-cycles when idle, follows the mouse on hover
+// Services accordion.
+// Desktop/tablet: auto-cycles when idle, follows the mouse on hover.
+// Mobile: no auto-scroll. It becomes a scroll-snapped peek carousel (see
+// style.css), and the "open" card just tracks whichever one is scrolled
+// into view, so the user drives it by scrolling, not a timer.
 const accordion = document.getElementById('accordion');
 
 if (accordion) {
   const panels = Array.from(accordion.querySelectorAll('.acc-panel'));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mobileQuery = window.matchMedia('(max-width: 760px)');
   let current = 0;
   let timer = null;
+  let mobileObserver = null;
   const INTERVAL = 8000;
 
   function open(index) {
@@ -71,7 +77,7 @@ if (accordion) {
   }
 
   function startAuto() {
-    if (reduceMotion || timer) return;
+    if (reduceMotion || timer || mobileQuery.matches) return;
     timer = setInterval(advance, INTERVAL);
   }
 
@@ -80,22 +86,52 @@ if (accordion) {
     timer = null;
   }
 
-  open(0);
+  function enableDesktopMode() {
+    if (mobileObserver) { mobileObserver.disconnect(); mobileObserver = null; }
+    open(0);
+    startAuto();
+  }
+
+  function enableMobileMode() {
+    stopAuto();
+    panels.forEach(panel => panel.classList.remove('is-open'));
+    mobileObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        entry.target.classList.toggle('is-open', entry.intersectionRatio > 0.55);
+      });
+    }, { root: accordion, threshold: [0, 0.55, 1] });
+    panels.forEach(panel => mobileObserver.observe(panel));
+  }
+
+  function applyMode() {
+    stopAuto();
+    if (mobileQuery.matches) { enableMobileMode(); } else { enableDesktopMode(); }
+  }
 
   panels.forEach((panel, i) => {
-    panel.addEventListener('mouseenter', () => open(i));
-    panel.addEventListener('click', () => open(i));
+    panel.addEventListener('mouseenter', () => { if (!mobileQuery.matches) open(i); });
+    panel.addEventListener('click', () => {
+      if (mobileQuery.matches) {
+        panel.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      } else {
+        open(i);
+      }
+    });
   });
 
-  accordion.addEventListener('mouseenter', stopAuto);
-  accordion.addEventListener('mouseleave', startAuto);
+  accordion.addEventListener('mouseenter', () => { if (!mobileQuery.matches) stopAuto(); });
+  accordion.addEventListener('mouseleave', () => { if (!mobileQuery.matches) startAuto(); });
 
-  // Only auto-cycle while the section is in view
+  // Only auto-cycle while the section is in view (desktop only)
   const accObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
+      if (mobileQuery.matches) return;
       if (entry.isIntersecting) { startAuto(); } else { stopAuto(); }
     });
   }, { threshold: 0.25 });
 
   accObserver.observe(accordion);
+
+  applyMode();
+  mobileQuery.addEventListener('change', applyMode);
 }

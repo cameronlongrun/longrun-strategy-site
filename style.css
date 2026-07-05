@@ -713,37 +713,36 @@ a { text-decoration: none; }
   .steps { grid-template-columns: 1fr 1fr; }
 }
 
-/* Accordion collapses to stacked cards on smaller screens */
+/* Services accordion on small screens: a scroll-snapped peek carousel.
+   Cards sit inside a fixed-height scrollable window; scrolling advances one
+   card at a time and hands scroll back to the page once the last card passes. */
 @media (max-width: 760px) {
   .accordion {
-    flex-direction: column;
-    height: auto;
-    gap: 12px;
+    display: block;
+    height: 400px;
+    border-radius: 14px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+    scrollbar-width: none;
   }
+
+  .accordion::-webkit-scrollbar { display: none; }
 
   .acc-panel,
   .acc-panel[data-distance] {
     flex: none;
-    padding: 22px 20px;
+    width: 100%;
+    height: 356px;
     min-height: 0;
     opacity: 1;
+    padding: 22px 20px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
-
-  .acc-panel.is-open {
-    flex: none;
-  }
-
-  .acc-desc {
-    position: static;
-    width: auto;
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-    margin-top: 12px;
-    color: var(--gray);
-  }
-
-  .acc-panel.is-open .acc-desc { color: rgba(247, 244, 238, 0.92); }
 }
 
 @media (max-width: 640px) {
