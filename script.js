@@ -116,9 +116,35 @@ if (stage && accordion) {
     }
   }
 
+  // The stack of cards shares one fixed height so they can overlay each
+  // other absolutely, but that height should match whatever the longest
+  // card actually needs, not a guessed number that leaves blank space
+  // under the shorter ones. Measure each panel's natural content height
+  // (briefly taking it out of absolute positioning to let it size to
+  // content) and use the tallest.
+  function syncCardHeight() {
+    let maxH = 0;
+    panels.forEach(panel => {
+      panel.style.position = 'static';
+      panel.style.height = 'auto';
+      const h = panel.offsetHeight;
+      panel.style.position = '';
+      panel.style.height = '';
+      if (h > maxH) maxH = h;
+    });
+    if (maxH > 0) {
+      document.documentElement.style.setProperty('--acc-h', maxH + 'px');
+    }
+  }
+
   render();
   syncHeaderOffset();
+  syncCardHeight();
   window.addEventListener('resize', syncHeaderOffset);
+  window.addEventListener('resize', syncCardHeight);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(syncCardHeight);
+  }
 
   if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
   if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
