@@ -13,6 +13,16 @@
   --sand: #EFE7DA;
   --serif: 'Newsreader', Georgia, serif;
   --sans: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --header-h: 78px;
+  --acc-h: 460px;
+  --acc-step: 300px;
+}
+
+/* Anchor links (nav, #services, etc.) land below the sticky header instead
+   of underneath it. --header-h is kept in sync with the real header height
+   by script.js, this is just a sane fallback before JS runs. */
+.section {
+  scroll-margin-top: var(--header-h);
 }
 
 * { box-sizing: border-box; }
@@ -544,14 +554,22 @@ a { text-decoration: none; }
   margin-bottom: 0;
 }
 
-/* Services accordion: a stacked deck of cards, at every screen size.
-   Scrolling (wheel or swipe) flips the front card back and away, revealing
-   the next one underneath, like flipping through a hand of cards. Once you
-   flip past the last one, scrolling continues down the page as usual. */
-.accordion {
+/* Services deck: a sticky-pinned stack of cards. The wrapping stage is
+   tall enough for one card's worth of scroll per card; while you're inside
+   it the deck pins at the same offset an anchor link to #services would
+   land on (--header-h), and scrolling flips one card at a time. Once you
+   scroll past the stage, the page just continues normally, no scroll
+   hijacking outside that range. */
+.services-stage {
   position: relative;
   margin-top: 44px;
-  height: 460px;
+  height: calc(var(--acc-h) + 4 * var(--acc-step));
+}
+
+.accordion {
+  position: sticky;
+  top: var(--header-h);
+  height: var(--acc-h);
   perspective: 1400px;
 }
 
@@ -581,6 +599,9 @@ a { text-decoration: none; }
   opacity: 0;
   z-index: 5;
   pointer-events: none;
+  /* Flipping away is the dramatic move, so give it noticeably more time
+     than the cards settling into place (0.6s above). */
+  transition: transform 1.15s cubic-bezier(.22,.68,.34,1), opacity 0.6s ease, background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
 }
 
 .acc-panel.is-open {
@@ -639,10 +660,9 @@ a { text-decoration: none; }
    over the top. The narrower column also lets the type run larger and fill
    the space better instead of sitting in a wide, mostly-empty card. */
 @media (min-width: 1024px) {
-  .accordion {
-    width: 620px;
-    height: 560px;
-  }
+  :root { --acc-h: 560px; }
+
+  .accordion { width: 620px; }
 
   .acc-panel { transform-origin: left center; }
 
@@ -749,7 +769,7 @@ a { text-decoration: none; }
 
 /* Services accordion: slightly shorter deck on small screens */
 @media (max-width: 760px) {
-  .accordion { height: 400px; }
+  :root { --acc-h: 400px; --acc-step: 260px; }
   .acc-panel { padding: 22px 20px; }
 }
 

@@ -48,23 +48,27 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-// Services accordion: a stacked deck of cards, at every screen size.
-// Scrolling or swiping over it flips the front card back to reveal the next
-// one, like flipping through a hand of cards, instead of scrolling text.
-// Once you flip past the first or last card, the gesture passes through and
-// the page scrolls normally.
+// Services deck: sticky-pinned, driven by real page scroll position rather
+// than "is the mouse hovering the box." The stage wrapper is tall enough
+// for one card's worth of scroll per card; while scrolled inside it, the
+// deck pins at the same offset the #services anchor link lands on, and the
+// active card is a direct function of scroll position, so it's always
+// anchored consistently and there's nothing to "get stuck" mid-gesture.
+// Once you scroll past the stage, it just un-pins and the page continues.
+const stage = document.getElementById('services-stage');
 const accordion = document.getElementById('accordion');
 
-if (accordion) {
+if (stage && accordion) {
   const panels = Array.from(accordion.querySelectorAll('.acc-panel'));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // COOLDOWN_MS is intentionally a bit longer than the CSS flip transition
-  // (600ms) so a fast scroll fling can't queue up several flips at once,
-  // each flip gets its full cooldown before the next wheel tick is honored.
-  const COOLDOWN_MS = reduceMotion ? 0 : 850;
+  // Longer than the CSS flip transition so a fast scroll fling can't queue
+  // up several flips at once, each flip gets its own cooldown, and any
+  // remaining distance is caught up one step at a time afterward.
+  const COOLDOWN_MS = reduceMotion ? 0 : 950;
   let current = 0;
-  let animating = false;
-  let animLock = null;
+  let cooling = false;
+  let cooldownTimer = null;
+  let rafPending = false;
 
   function render() {
     panels.forEach((panel, i) => {
@@ -74,63 +78,51 @@ if (accordion) {
     });
   }
 
-  function goTo(index) {
-    const clamped = Math.max(0, Math.min(panels.length - 1, index));
-    if (clamped === current) return;
-    current = clamped;
+  function headerHeight() {
+    const parsed = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h'));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function syncHeaderOffset() {
+    const header = document.querySelector('.site-header');
+    if (header) {
+      document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+    }
+  }
+
+  function targetIndex() {
+    const step = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--acc-step')) || 300;
+    const stageTop = stage.getBoundingClientRect().top + window.scrollY;
+    const progress = window.scrollY - (stageTop - headerHeight());
+    const maxProgress = (panels.length - 1) * step;
+    const clamped = Math.max(0, Math.min(maxProgress, progress));
+    return Math.round(clamped / step);
+  }
+
+  function step() {
+    const target = targetIndex();
+    if (target === current || cooling) return;
+    current += target > current ? 1 : -1;
     render();
-    animating = true;
-    clearTimeout(animLock);
-    animLock = setTimeout(() => { animating = false; }, COOLDOWN_MS);
+    cooling = true;
+    clearTimeout(cooldownTimer);
+    cooldownTimer = setTimeout(() => {
+      cooling = false;
+      step();
+    }, COOLDOWN_MS);
+  }
+
+  function onScroll() {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => {
+      rafPending = false;
+      step();
+    });
   }
 
   render();
-
-  panels.forEach((panel, i) => {
-    panel.addEventListener('click', () => goTo(i));
-  });
-
-  accordion.addEventListener('wheel', (e) => {
-    if (animating) { e.preventDefault(); return; }
-    const goingNext = e.deltaY > 0;
-    if (goingNext && current < panels.length - 1) {
-      e.preventDefault();
-      goTo(current + 1);
-    } else if (!goingNext && current > 0) {
-      e.preventDefault();
-      goTo(current - 1);
-    }
-    // At the first or last card, do nothing: the page scrolls through as usual.
-  }, { passive: false });
-
-  let touchStartY = null;
-  let touchAction = null; // 'next' | 'prev' | 'pass'
-
-  accordion.addEventListener('touchstart', (e) => {
-    touchStartY = e.touches[0].clientY;
-    touchAction = null;
-  }, { passive: true });
-
-  accordion.addEventListener('touchmove', (e) => {
-    if (touchStartY === null) return;
-    const dy = touchStartY - e.touches[0].clientY;
-    if (touchAction === null && Math.abs(dy) > 6) {
-      const goingNext = dy > 0;
-      if (goingNext && current < panels.length - 1) touchAction = 'next';
-      else if (!goingNext && current > 0) touchAction = 'prev';
-      else touchAction = 'pass';
-    }
-    if (touchAction === 'next' || touchAction === 'prev') e.preventDefault();
-  }, { passive: false });
-
-  accordion.addEventListener('touchend', (e) => {
-    if (touchStartY === null) return;
-    const dy = touchStartY - (e.changedTouches[0] ? e.changedTouches[0].clientY : touchStartY);
-    if (Math.abs(dy) > 28) {
-      if (dy > 0 && current < panels.length - 1) goTo(current + 1);
-      else if (dy < 0 && current > 0) goTo(current - 1);
-    }
-    touchStartY = null;
-    touchAction = null;
-  }, { passive: true });
+  syncHeaderOffset();
+  window.addEventListener('resize', () => { syncHeaderOffset(); step(); });
+  window.addEventListener('scroll', onScroll, { passive: true });
 }
