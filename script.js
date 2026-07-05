@@ -8,10 +8,20 @@ navToggle.addEventListener('click', () => {
   navToggle.setAttribute('aria-expanded', isOpen);
 });
 
+// Set while a nav link's anchor jump is under way (plus a short buffer for
+// the smooth-scroll animation and any trailing trackpad momentum), so the
+// services deck below doesn't mistake that motion for a user trying to flip
+// through cards.
+let suppressDeckInput = false;
+let suppressDeckTimer = null;
+
 siteNav.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', () => {
     siteNav.classList.remove('open');
     navToggle.setAttribute('aria-expanded', 'false');
+    suppressDeckInput = true;
+    clearTimeout(suppressDeckTimer);
+    suppressDeckTimer = setTimeout(() => { suppressDeckInput = false; }, 1200);
   });
 });
 
@@ -99,6 +109,7 @@ if (stage && accordion) {
   window.addEventListener('resize', syncHeaderOffset);
 
   stage.addEventListener('wheel', (e) => {
+    if (suppressDeckInput) return;
     if (cooling) { e.preventDefault(); return; }
     const goingNext = e.deltaY > 0;
     if (goingNext && current < panels.length - 1) {
@@ -121,6 +132,7 @@ if (stage && accordion) {
 
   stage.addEventListener('touchmove', (e) => {
     if (touchStartY === null) return;
+    if (suppressDeckInput) return;
     if (cooling) { e.preventDefault(); return; }
     const dy = touchStartY - e.touches[0].clientY;
     if (touchAction === null && Math.abs(dy) > 6) {
@@ -135,7 +147,7 @@ if (stage && accordion) {
   stage.addEventListener('touchend', (e) => {
     if (touchStartY === null) return;
     const dy = touchStartY - (e.changedTouches[0] ? e.changedTouches[0].clientY : touchStartY);
-    if (Math.abs(dy) > 28) {
+    if (!suppressDeckInput && Math.abs(dy) > 28) {
       if (dy > 0 && current < panels.length - 1) goTo(current + 1);
       else if (dy < 0 && current > 0) goTo(current - 1);
     }

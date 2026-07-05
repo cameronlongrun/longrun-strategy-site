@@ -18,11 +18,12 @@
   --acc-buffer: 120px;
 }
 
-/* Anchor links (nav, #services, etc.) land below the sticky header instead
-   of underneath it. --header-h is kept in sync with the real header height
-   by script.js, this is just a sane fallback before JS runs. */
+/* Anchor links (nav, #services, etc.) land just below the sticky header.
+   Sections already carry generous top padding (120px, see below), so a
+   small scroll-margin is enough, the padding itself provides the real
+   clearance from the nav without leaving a big empty gap above the heading. */
 .section {
-  scroll-margin-top: var(--header-h);
+  scroll-margin-top: 20px;
 }
 
 * { box-sizing: border-box; }
