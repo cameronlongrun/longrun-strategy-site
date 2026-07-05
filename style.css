@@ -634,6 +634,31 @@ a { text-decoration: none; }
   transform: none;
 }
 
+/* On laptop and up, narrow the deck and flip it around a vertical spine
+   instead of a horizontal one, like a card wheel rather than a page turning
+   over the top. The narrower column also lets the type run larger and fill
+   the space better instead of sitting in a wide, mostly-empty card. */
+@media (min-width: 1024px) {
+  .accordion {
+    width: 620px;
+    height: 560px;
+  }
+
+  .acc-panel { transform-origin: left center; }
+
+  .acc-panel[data-slot="passed"] {
+    transform: translateX(-24px) scale(0.97) rotateY(-110deg);
+  }
+
+  .acc-title { font-size: 1.5rem; }
+
+  .acc-desc {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-top: 20px;
+  }
+}
+
 /* Steps */
 .steps {
   display: grid;

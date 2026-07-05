@@ -58,7 +58,10 @@ const accordion = document.getElementById('accordion');
 if (accordion) {
   const panels = Array.from(accordion.querySelectorAll('.acc-panel'));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const ANIM_MS = reduceMotion ? 0 : 600;
+  // COOLDOWN_MS is intentionally a bit longer than the CSS flip transition
+  // (600ms) so a fast scroll fling can't queue up several flips at once,
+  // each flip gets its full cooldown before the next wheel tick is honored.
+  const COOLDOWN_MS = reduceMotion ? 0 : 850;
   let current = 0;
   let animating = false;
   let animLock = null;
@@ -78,7 +81,7 @@ if (accordion) {
     render();
     animating = true;
     clearTimeout(animLock);
-    animLock = setTimeout(() => { animating = false; }, ANIM_MS);
+    animLock = setTimeout(() => { animating = false; }, COOLDOWN_MS);
   }
 
   render();
