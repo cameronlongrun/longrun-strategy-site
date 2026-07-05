@@ -59,17 +59,23 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
 // Services deck: sticky-pinned for a deterministic anchor point (it locks at
-// the same offset the #services anchor link lands on, see --header-h), and
-// gated by real wheel/touch interception so the page genuinely cannot
-// scroll past until all five cards have been flipped through, in either
-// direction. Native scroll speed can't outrun this the way a pure
-// scroll-position mapping could, every step is consumed and rate-limited
-// here before the browser ever sees it.
+// the same offset the #services anchor link lands on, see --header-h).
+// Scroll is only intercepted for the FIRST pass through the five cards, so
+// the visitor sees the whole deck once without accidentally scrolling past
+// it. The instant that first forward pass finishes (reaching the last card
+// and trying to continue), the lock releases permanently for the rest of
+// the page's life, the deck stops touching wheel/touch input entirely, and
+// the page scrolls normally from then on. After that, the only way to
+// revisit an earlier card is the Prev/Next buttons, which always work
+// regardless of lock state.
 const stage = document.getElementById('services-stage');
 const accordion = document.getElementById('accordion');
 
 if (stage && accordion) {
   const panels = Array.from(accordion.querySelectorAll('.acc-panel'));
+  const prevBtn = document.getElementById('acc-prev');
+  const nextBtn = document.getElementById('acc-next');
+  const counterEl = document.getElementById('acc-counter');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Longer than the CSS flip transition so a fast scroll fling can't queue
   // up several flips at once, each flip gets its own full cooldown.
@@ -77,6 +83,7 @@ if (stage && accordion) {
   let current = 0;
   let cooling = false;
   let cooldownTimer = null;
+  let lockReleased = false;
 
   function render() {
     panels.forEach((panel, i) => {
@@ -84,6 +91,11 @@ if (stage && accordion) {
       panel.classList.toggle('is-open', slot === 0);
       panel.dataset.slot = slot < 0 ? 'passed' : String(Math.min(slot, 4));
     });
+    if (counterEl) {
+      counterEl.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(panels.length).padStart(2, '0');
+    }
+    if (prevBtn) prevBtn.disabled = current === 0;
+    if (nextBtn) nextBtn.disabled = current === panels.length - 1;
   }
 
   function goTo(index) {
@@ -108,8 +120,11 @@ if (stage && accordion) {
   syncHeaderOffset();
   window.addEventListener('resize', syncHeaderOffset);
 
+  if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
+
   stage.addEventListener('wheel', (e) => {
-    if (suppressDeckInput) return;
+    if (lockReleased || suppressDeckInput) return;
     if (cooling) { e.preventDefault(); return; }
     const goingNext = e.deltaY > 0;
     if (goingNext && current < panels.length - 1) {
@@ -118,8 +133,11 @@ if (stage && accordion) {
     } else if (!goingNext && current > 0) {
       e.preventDefault();
       goTo(current - 1);
+    } else if (goingNext && current === panels.length - 1) {
+      // First full pass just finished: release the lock for good and let
+      // this scroll (and every one after it) move the page as normal.
+      lockReleased = true;
     }
-    // At the first or last card, do nothing: the page scrolls through as usual.
   }, { passive: false });
 
   let touchStartY = null;
@@ -132,24 +150,29 @@ if (stage && accordion) {
 
   stage.addEventListener('touchmove', (e) => {
     if (touchStartY === null) return;
-    if (suppressDeckInput) return;
+    if (lockReleased || suppressDeckInput) return;
     if (cooling) { e.preventDefault(); return; }
     const dy = touchStartY - e.touches[0].clientY;
     if (touchAction === null && Math.abs(dy) > 6) {
       const goingNext = dy > 0;
       if (goingNext && current < panels.length - 1) touchAction = 'next';
       else if (!goingNext && current > 0) touchAction = 'prev';
-      else touchAction = 'pass';
+      else {
+        touchAction = 'pass';
+        if (goingNext && current === panels.length - 1) lockReleased = true;
+      }
     }
     if (touchAction === 'next' || touchAction === 'prev') e.preventDefault();
   }, { passive: false });
 
   stage.addEventListener('touchend', (e) => {
     if (touchStartY === null) return;
-    const dy = touchStartY - (e.changedTouches[0] ? e.changedTouches[0].clientY : touchStartY);
-    if (!suppressDeckInput && Math.abs(dy) > 28) {
-      if (dy > 0 && current < panels.length - 1) goTo(current + 1);
-      else if (dy < 0 && current > 0) goTo(current - 1);
+    if (!lockReleased && !suppressDeckInput) {
+      const dy = touchStartY - (e.changedTouches[0] ? e.changedTouches[0].clientY : touchStartY);
+      if (Math.abs(dy) > 28) {
+        if (dy > 0 && current < panels.length - 1) goTo(current + 1);
+        else if (dy < 0 && current > 0) goTo(current - 1);
+      }
     }
     touchStartY = null;
     touchAction = null;

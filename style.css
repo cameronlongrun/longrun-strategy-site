@@ -15,7 +15,7 @@
   --sans: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --header-h: 78px;
   --acc-h: 460px;
-  --acc-buffer: 120px;
+  --acc-buffer: 170px;
 }
 
 /* Anchor links (nav, #services, etc.) land just below the sticky header.
@@ -655,6 +655,51 @@ a { text-decoration: none; }
 .acc-panel.is-open .acc-desc {
   opacity: 1;
   transform: none;
+}
+
+/* Arrow controls: the only way to browse back through the deck once the
+   scroll lock has released after the first pass (see script.js). Sit
+   just below the card, inside the buffer space reserved by
+   .services-stage so they never overlap the peeking stacked cards. */
+.acc-nav {
+  position: absolute;
+  left: 50%;
+  bottom: -120px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  z-index: 60;
+}
+
+.acc-arrow {
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.acc-arrow:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.acc-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.acc-counter {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--gray);
 }
 
 /* On laptop and up, narrow the deck and flip it around a vertical spine
