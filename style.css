@@ -15,7 +15,7 @@
   --sans: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --header-h: 78px;
   --acc-h: 460px;
-  --acc-step: 300px;
+  --acc-buffer: 120px;
 }
 
 /* Anchor links (nav, #services, etc.) land below the sticky header instead
@@ -554,16 +554,17 @@ a { text-decoration: none; }
   margin-bottom: 0;
 }
 
-/* Services deck: a sticky-pinned stack of cards. The wrapping stage is
-   tall enough for one card's worth of scroll per card; while you're inside
-   it the deck pins at the same offset an anchor link to #services would
-   land on (--header-h), and scrolling flips one card at a time. Once you
-   scroll past the stage, the page just continues normally, no scroll
-   hijacking outside that range. */
+/* Services deck: a sticky-pinned stack of cards. It pins at the same offset
+   an anchor link to #services would land on (--header-h), so where it
+   engages is deterministic instead of depending on where the cursor happens
+   to be. script.js consumes wheel/touch input while there are still cards
+   left to flip through in that direction (in either direction), so the page
+   genuinely can't scroll past until all five cards have been seen, then it
+   releases and the small buffer below lets the deck un-pin smoothly. */
 .services-stage {
   position: relative;
   margin-top: 44px;
-  height: calc(var(--acc-h) + 4 * var(--acc-step));
+  height: calc(var(--acc-h) + var(--acc-buffer));
 }
 
 .accordion {
@@ -769,7 +770,7 @@ a { text-decoration: none; }
 
 /* Services accordion: slightly shorter deck on small screens */
 @media (max-width: 760px) {
-  :root { --acc-h: 400px; --acc-step: 260px; }
+  :root { --acc-h: 400px; }
   .acc-panel { padding: 22px 20px; }
 }
 
